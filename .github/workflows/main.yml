@@ -32,7 +32,7 @@ jobs:
       run:  MOVE ./build/template-windows-x64.rebx ./template-windows-x64.rebx
 
     - name: Install Rebol for extension test
-      uses: oldes/install-rebol@v3.14.0
+      uses: oldes/install-rebol@v3.16.0
       with:
         product: Bulk
 
@@ -60,7 +60,7 @@ jobs:
       run:  mv ./build/template-linux-x64.so ./template.rebx
 
     - name: Install Rebol for extension test
-      uses: oldes/install-rebol@v3.14.0
+      uses: oldes/install-rebol@v3.16.0
       with:
         product: Bulk
 
@@ -93,7 +93,7 @@ jobs:
       run:  mv ./build/template-macos-x64.dylib ./template-macos-x64.rebx
 
     - name: Install Rebol for extension test
-      uses: oldes/install-rebol@v3.14.0
+      uses: oldes/install-rebol@v3.16.0
       with:
         product: Bulk
 
