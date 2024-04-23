@@ -1,4 +1,4 @@
-[![Rebol-Template CI](https://github.com/Oldes/Rebol-Template/actions/workflows/main.yml/badge.svg)](https://github.com/Oldes/Rebol-Template/actions/workflows/main.yml)
+[![Rebol-Template CI](https://github.com/Oldes/Rebol-C-Extension-Template/actions/workflows/main.yml/badge.svg)](https://github.com/Oldes/Rebol-C-Extension-Template/actions/workflows/main.yml)
 
 # Rebol/Template
 
