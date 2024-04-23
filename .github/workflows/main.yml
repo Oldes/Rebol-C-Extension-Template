@@ -39,7 +39,7 @@ jobs:
     - name: Minimal Rebol/Template extension test
       run:  ./rebol3 ci-test.r3
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v3
       with:
         name: Rebol-Template-CI-${{github.run_id}}
         path: ./*.rebx
@@ -72,7 +72,7 @@ jobs:
         mv ./template.rebx ./template-linux-x64.rebx
         gzip -9 ./template-linux-x64.rebx
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v3
       with:
         name: Rebol-Template-CI-${{github.run_id}}
         path: ./*.gz
@@ -103,7 +103,7 @@ jobs:
     - name: Compress 64bit Rebol/Template extension
       run:  gzip -9 ./template-macos-x64.rebx
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v3
       with:
         name: Rebol-Template-CI-${{github.run_id}}
         path: ./*.gz
@@ -131,7 +131,7 @@ jobs:
 #          sudo mv ./build/template-haiku-x86.so ./template-haiku-x86.rebx
 #          sudo gzip -9 ./template-haiku-x86.rebx
 #
-#      - uses: actions/upload-artifact@v4
+#      - uses: actions/upload-artifact@v3
 #        with:
 #          name: Rebol-Template-CI-${{github.run_id}}
 #          path: ./template-*.gz
@@ -159,7 +159,7 @@ jobs:
 #          sudo mv ./build/template-haiku-x64.so ./template-haiku-x64.rebx
 #          sudo gzip -9 ./template-haiku-x64.rebx
 #
-#      - uses: actions/upload-artifact@v4
+#      - uses: actions/upload-artifact@v3
 #        with:
 #          name: Rebol-Template-CI-${{github.run_id}}
 #          path: ./template-*.gz
