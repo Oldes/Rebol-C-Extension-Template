@@ -1,0 +1,126 @@
+;-    .-.                                                                       
+;-   /'v'\   SISKIN-Builder project file                                        
+;-  (/uOu\)  https://github.com/Siskin-framework/Builder/                       
+;-===="="=======================================================================
+
+;github: Oldes/template
+
+version: 0.0.1
+
+;include:  %template/
+
+compiler: clang
+arch:     x64
+optimize: 2
+
+define: USE_TRACES
+
+;- options common for all Rebol extensions ----------------------
+flag:   shared
+
+#if Windows? [
+	define: _CRT_SECURE_NO_WARNINGS
+	define: _USE_MATH_DEFINES
+	define: TO_WINDOWS
+	upx:    on
+	strip:  on
+]
+#if Linux? [
+	compiler: gcc
+]
+
+target-x86: [
+	arch: x86
+]
+target-x64: [
+	arch: x64
+	defines: [
+		_FILE_OFFSET_BITS=64
+		__LP64__       ; has long (integer) 64 bits
+	]
+	#if macOS?   [ flag: "-arch x86_64" ]
+]
+target-arm64: [
+	arch: arm64
+	#if Linux? [
+		flag: "-arch arm64"
+	]
+	#if macOS? [
+		flag: "-target arm64-apple-darwin"
+	]
+	define: _FILE_OFFSET_BITS=64
+	define: __LP64__   ; has long (integer) 64 bits
+	define: __arm64__
+]
+target-armv7: [
+	arch: armv7
+	flag: "-march=armv7"
+]
+;----------------------------------------------------------------
+
+
+#if Posix? [
+;	libraries: [%dl %m %pthread]
+;	cflag: -msse2
+;	cflag: -mavx2
+]
+
+#if macOS? [
+	sign: on
+;	entitlements: %template/Entitlements.plist
+;	define: DISABLE_MANUAL_TARGET_ORDER_BUILD_WARNING
+;	define: MA_NO_RUNTIME_LINKING
+;	define: MA_ENABLE_ONLY_SPECIFIC_BACKENDS
+;	define: MA_ENABLE_COREAUDIO
+;	frameworks: [CoreFoundation CoreAudio AudioToolbox]
+]
+#if Linux? [
+	cflags: -fPIC
+]
+
+;- generate main extension header --------------------------------
+do %src/template-rebol-extension.r3 
+
+files: [
+	%src/template-commands.c
+	%src/template-commands-table.c
+	%src/template-rebol-extension.c
+]
+
+eggs: [
+	#if Windows? [
+		"Rebol Template extension: win32_x86" [
+			name: %template-windows-x86.rebx
+			:target-x86
+		]
+		"Rebol Template extension: win32_x64" [
+			name: %template-windows-x64.rebx
+			:target-x64
+		]
+	]
+	#if macOS? [
+		"Rebol Template extension: macos_x64" [
+			name: %template-macos-x64
+			:target-x64
+		]
+		"Rebol Template extension: macos_arm64" [
+			name: %template-macos-arm64
+			:target-arm64
+		]
+	]
+	#if Linux? [
+		"Rebol Template extension:linux_x64" [
+			name: %template-linux-x64
+			:target-x64
+		]
+		"Rebol Template extension: linux_arm64" [
+			name: %template-linux-arm64
+			:target-arm64
+		]
+		"Rebol Template extension: linux_armv7" [
+			name: %template-linux-armv7
+			:target-armv7
+		]
+	]
+]
+

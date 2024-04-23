@@ -1,0 +1,167 @@
+name: 'Rebol-Template CI'
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+#  push:
+#    branches: [ master ]
+#  pull_request:
+#    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install Siskin Builder
+      uses: oldes/install-siskin@v0.13.0
+
+    - name: Build 32bit Rebol/Template extension
+      run: ./siskin Rebol-Template.nest template-windows-x86.rebx
+
+    - name: Prepare 32bit Rebol/Template extension
+      run:  MOVE ./build/template-windows-x86.rebx ./template-windows-x86.rebx
+
+    - name: Build 64bit Rebol/Template extension
+      run: ./siskin Rebol-Template.nest template-windows-x64.rebx
+
+    - name: Prepare 64bit Rebol/Template extension
+      run:  MOVE ./build/template-windows-x64.rebx ./template-windows-x64.rebx
+
+    - name: Install Rebol for extension test
+      uses: oldes/install-rebol@v3.14.0
+      with:
+        product: Bulk
+
+    - name: Minimal Rebol/Template extension test
+      run:  ./rebol3 ci-test.r3
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: Rebol-Template-CI-${{github.run_id}}
+        path: ./*.rebx
+
+  linux:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install Siskin Builder
+      uses: oldes/install-siskin@v0.13.0
+
+    - name: Build 64bit Rebol/Template extension
+      run: ./siskin Rebol-Template.nest template-linux-x64
+
+    - name: Prepare 64bit Rebol Template extension
+      run:  mv ./build/template-linux-x64.so ./template.rebx
+
+    - name: Install Rebol for extension test
+      uses: oldes/install-rebol@v3.14.0
+      with:
+        product: Bulk
+
+    - name: Minimal Rebol/Template extension test
+      run:  ./rebol3 ci-test.r3
+
+    - name: Compress 64bit Rebol/Template extension
+      run:  |
+        mv ./template.rebx ./template-linux-x64.rebx
+        gzip -9 ./template-linux-x64.rebx
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: Rebol-Template-CI-${{github.run_id}}
+        path: ./*.gz
+
+  macos:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install Siskin Builder
+      uses: oldes/install-siskin@v0.13.0
+
+    - name: Build 64bit Rebol/Template extension
+      run: ./siskin Rebol-Template.nest template-macos-x64
+
+    - name: Prepare 64bit Rebol Template extension
+      run:  mv ./build/template-macos-x64.dylib ./template-macos-x64.rebx
+
+    - name: Install Rebol for extension test
+      uses: oldes/install-rebol@v3.14.0
+      with:
+        product: Bulk
+
+    - name: Minimal Rebol/Template extension test
+      run:  ./rebol3 ci-test.r3
+
+    - name: Compress 64bit Rebol/Template extension
+      run:  gzip -9 ./template-macos-x64.rebx
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: Rebol-Template-CI-${{github.run_id}}
+        path: ./*.gz
+
+#  Haiku-x86:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v3
+#
+#      - name: Login to Docker Hub
+#        uses: docker/login-action@v2
+#        with:
+#          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+#          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+#
+#      - name: Download Haiku Rebol-dev container
+#        run: docker pull docker.io/oldes/rebol-dev:haiku-x86
+#
+#      - name: Build all Rebol/Template for Haiku OS x86
+#        run: docker run --rm -v $PWD:/siskin oldes/rebol-dev:haiku-x86 bash -c 'cd /siskin; rebol siskin.r3 Rebol-Template.nest template-haiku-x86'
+#
+#      - name: Compress result before uploading
+#        run: |
+#          sudo mv ./build/template-haiku-x86.so ./template-haiku-x86.rebx
+#          sudo gzip -9 ./template-haiku-x86.rebx
+#
+#      - uses: actions/upload-artifact@v3
+#        with:
+#          name: Rebol-Template-CI-${{github.run_id}}
+#          path: ./template-*.gz
+#
+#  Haiku-x64:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v3
+#
+#      - name: Login to Docker Hub
+#        uses: docker/login-action@v2
+#        with:
+#          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+#          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+#
+#      - name: Download Haiku Rebol-dev container
+#        run: docker pull docker.io/oldes/rebol-dev:haiku-x64
+#
+#      - name: Build all Rebol/Template for Haiku OS x64
+#        run: docker run --rm -v $PWD:/siskin oldes/rebol-dev:haiku-x64 bash -c 'cd /siskin; rebol siskin.r3 Rebol-Template.nest template-haiku-x64'
+#
+#      - name: Compress result before uploading
+#        run: |
+#          sudo mv ./build/template-haiku-x64.so ./template-haiku-x64.rebx
+#          sudo gzip -9 ./template-haiku-x64.rebx
+#
+#      - uses: actions/upload-artifact@v3
+#        with:
+#          name: Rebol-Template-CI-${{github.run_id}}
+#          path: ./template-*.gz
+#
+#
